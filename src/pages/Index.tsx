@@ -437,15 +437,40 @@ End Sub`;
                         Скопировать формулу
                       </Button>
 
-                      <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
-                        <div className="flex items-start gap-3">
-                          <Icon name="Lightbulb" size={20} className="text-accent mt-0.5 flex-shrink-0" />
-                          <div className="space-y-1">
-                            <p className="text-sm font-medium">Как использовать:</p>
-                            <p className="text-sm text-muted-foreground">
-                              Скопируйте формулу и вставьте в любую ячейку Excel. 
-                              Измените диапазоны ячеек под ваши данные.
-                            </p>
+                      <div className="space-y-3">
+                        <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
+                          <div className="flex items-start gap-3">
+                            <Icon name="Lightbulb" size={20} className="text-accent mt-0.5 flex-shrink-0" />
+                            <div className="space-y-3">
+                              <div>
+                                <p className="text-sm font-semibold mb-2">📋 Как использовать формулу:</p>
+                                <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
+                                  <li>Нажмите кнопку "Скопировать формулу"</li>
+                                  <li>Откройте Excel и выберите нужную ячейку</li>
+                                  <li>Вставьте формулу (Ctrl+V или Cmd+V)</li>
+                                  <li>Нажмите Enter для применения</li>
+                                </ol>
+                              </div>
+                              
+                              <div className="pt-2 border-t border-accent/20">
+                                <p className="text-sm font-semibold mb-2">⚙️ Настройка диапазонов:</p>
+                                <div className="text-sm text-muted-foreground space-y-1">
+                                  <p><code className="bg-muted/50 px-1 rounded">A1:A10</code> — это диапазон ячеек</p>
+                                  <p>Измените буквы и цифры под ваши данные:</p>
+                                  <p className="ml-4">• <code className="bg-muted/50 px-1 rounded">B5:B20</code> — столбец B, строки 5-20</p>
+                                  <p className="ml-4">• <code className="bg-muted/50 px-1 rounded">C2:E10</code> — столбцы C-E, строки 2-10</p>
+                                </div>
+                              </div>
+                              
+                              <div className="pt-2 border-t border-accent/20">
+                                <p className="text-sm font-semibold mb-1">💡 Полезные советы:</p>
+                                <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                                  <li>Формулы всегда начинаются с знака <code className="bg-muted/50 px-1 rounded">=</code></li>
+                                  <li>Используйте <code className="bg-muted/50 px-1 rounded">;</code> для разделения аргументов</li>
+                                  <li>Нажмите F9 чтобы пересчитать все формулы</li>
+                                </ul>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -551,17 +576,67 @@ End Sub`;
                         Скопировать код
                       </Button>
 
-                      <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
-                        <div className="flex items-start gap-3">
-                          <Icon name="Info" size={20} className="text-accent mt-0.5 flex-shrink-0" />
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium">Как установить макрос:</p>
-                            <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-                              <li>Откройте Excel, нажмите Alt+F11</li>
-                              <li>Вставка → Модуль</li>
-                              <li>Вставьте скопированный код</li>
-                              <li>Запустите через Alt+F8</li>
-                            </ol>
+                      <div className="space-y-3">
+                        <div className="p-4 rounded-lg bg-secondary/10 border border-secondary/30">
+                          <div className="flex items-start gap-3">
+                            <Icon name="Play" size={20} className="text-secondary mt-0.5 flex-shrink-0" />
+                            <div className="space-y-3">
+                              <div>
+                                <p className="text-sm font-semibold mb-2">🚀 Как установить макрос:</p>
+                                <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
+                                  <li>
+                                    <span className="font-medium">Откройте редактор VBA:</span>
+                                    <p className="ml-6 mt-1">• Windows: нажмите <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">Alt</kbd> + <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">F11</kbd></p>
+                                    <p className="ml-6">• Mac: нажмите <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">Fn</kbd> + <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">Option</kbd> + <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">F11</kbd></p>
+                                  </li>
+                                  <li>
+                                    <span className="font-medium">Создайте модуль:</span>
+                                    <p className="ml-6 mt-1">В меню выберите <strong>Вставка → Модуль</strong></p>
+                                  </li>
+                                  <li>
+                                    <span className="font-medium">Вставьте код:</span>
+                                    <p className="ml-6 mt-1">Нажмите "Скопировать код" и вставьте в окно модуля</p>
+                                  </li>
+                                  <li>
+                                    <span className="font-medium">Закройте редактор:</span>
+                                    <p className="ml-6 mt-1">Нажмите <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">Alt</kbd> + <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">Q</kbd> или закройте окно</p>
+                                  </li>
+                                </ol>
+                              </div>
+                              
+                              <div className="pt-2 border-t border-secondary/20">
+                                <p className="text-sm font-semibold mb-2">▶️ Как запустить макрос:</p>
+                                <div className="text-sm text-muted-foreground space-y-2">
+                                  <p><strong>Способ 1 — Горячие клавиши:</strong></p>
+                                  <p className="ml-4">• Нажмите <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">Alt</kbd> + <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">F8</kbd></p>
+                                  <p className="ml-4">• Выберите макрос из списка</p>
+                                  <p className="ml-4">• Нажмите "Выполнить"</p>
+                                  
+                                  <p className="mt-2"><strong>Способ 2 — Через ленту:</strong></p>
+                                  <p className="ml-4">• Вкладка <strong>Разработчик → Макросы</strong></p>
+                                  <p className="ml-4">• Выберите макрос и нажмите "Выполнить"</p>
+                                </div>
+                              </div>
+                              
+                              <div className="pt-2 border-t border-secondary/20">
+                                <p className="text-sm font-semibold mb-2">🔒 Безопасность макросов:</p>
+                                <div className="text-sm text-muted-foreground space-y-1">
+                                  <p>Если макрос не работает, включите их:</p>
+                                  <p className="ml-4">1. <strong>Файл → Параметры → Центр управления безопасностью</strong></p>
+                                  <p className="ml-4">2. <strong>Параметры центра → Параметры макросов</strong></p>
+                                  <p className="ml-4">3. Выберите "Включить все макросы"</p>
+                                </div>
+                              </div>
+                              
+                              <div className="pt-2 border-t border-secondary/20">
+                                <p className="text-sm font-semibold mb-1">💾 Сохранение файла с макросами:</p>
+                                <div className="text-sm text-muted-foreground space-y-1">
+                                  <p>Сохраняйте в формате <code className="bg-muted/50 px-1 rounded">.xlsm</code> (с поддержкой макросов)</p>
+                                  <p className="ml-4">• <strong>Файл → Сохранить как</strong></p>
+                                  <p className="ml-4">• Тип файла: <strong>Книга Excel с поддержкой макросов (*.xlsm)</strong></p>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
