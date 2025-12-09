@@ -110,11 +110,104 @@ const suggestedPrompts = [
   'Найти максимальное значение в диапазоне'
 ];
 
+const macroTemplates = [
+  {
+    category: 'Форматирование',
+    macros: [
+      {
+        name: 'Автоширина столбцов',
+        description: 'Автоматически подбирает ширину всех столбцов',
+        code: `Sub AutoFitColumns()
+    Cells.Select
+    Selection.Columns.AutoFit
+    Range("A1").Select
+End Sub`
+      },
+      {
+        name: 'Цветная подсветка строк',
+        description: 'Раскрашивает строки через одну',
+        code: `Sub ColorAlternateRows()
+    Dim i As Long
+    For i = 2 To Cells(Rows.Count, 1).End(xlUp).Row
+        If i Mod 2 = 0 Then
+            Rows(i).Interior.Color = RGB(240, 240, 240)
+        End If
+    Next i
+End Sub`
+      }
+    ]
+  },
+  {
+    category: 'Обработка данных',
+    macros: [
+      {
+        name: 'Удалить пустые строки',
+        description: 'Удаляет все пустые строки в таблице',
+        code: `Sub DeleteEmptyRows()
+    Dim i As Long
+    For i = Cells(Rows.Count, 1).End(xlUp).Row To 1 Step -1
+        If WorksheetFunction.CountA(Rows(i)) = 0 Then
+            Rows(i).Delete
+        End If
+    Next i
+End Sub`
+      },
+      {
+        name: 'Сортировка по столбцу A',
+        description: 'Сортирует данные по первому столбцу',
+        code: `Sub SortByColumnA()
+    Dim lastRow As Long
+    lastRow = Cells(Rows.Count, 1).End(xlUp).Row
+    Range("A1:Z" & lastRow).Sort Key1:=Range("A1"), _
+        Order1:=xlAscending, Header:=xlYes
+End Sub`
+      }
+    ]
+  },
+  {
+    category: 'Экспорт',
+    macros: [
+      {
+        name: 'Сохранить как PDF',
+        description: 'Сохраняет активный лист в PDF',
+        code: `Sub ExportToPDF()
+    Dim fileName As String
+    fileName = ThisWorkbook.Path & "\\" & ActiveSheet.Name & ".pdf"
+    ActiveSheet.ExportAsFixedFormat Type:=xlTypePDF, _
+        fileName:=fileName, Quality:=xlQualityStandard
+    MsgBox "Файл сохранён: " & fileName
+End Sub`
+      },
+      {
+        name: 'Экспорт в CSV',
+        description: 'Сохраняет активный лист как CSV файл',
+        code: `Sub ExportToCSV()
+    Dim fileName As String
+    fileName = ThisWorkbook.Path & "\\" & ActiveSheet.Name & ".csv"
+    ActiveSheet.SaveAs fileName:=fileName, FileFormat:=xlCSV
+    MsgBox "Файл сохранён: " & fileName
+End Sub`
+      }
+    ]
+  }
+];
+
+const macroPrompts = [
+  'Удалить все пустые строки',
+  'Автоматически подогнать ширину столбцов',
+  'Раскрасить строки через одну',
+  'Сохранить таблицу в PDF',
+  'Найти и заменить текст во всех ячейках'
+];
+
 export default function Index() {
   const [userInput, setUserInput] = useState('');
   const [generatedFormula, setGeneratedFormula] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState('generator');
+  const [macroInput, setMacroInput] = useState('');
+  const [generatedMacro, setGeneratedMacro] = useState('');
+  const [isGeneratingMacro, setIsGeneratingMacro] = useState(false);
 
   const generateFormula = () => {
     setIsGenerating(true);
@@ -150,6 +243,79 @@ export default function Index() {
     navigator.clipboard.writeText(generatedFormula);
   };
 
+  const generateMacro = () => {
+    setIsGeneratingMacro(true);
+    
+    setTimeout(() => {
+      const lowerInput = macroInput.toLowerCase();
+      let macro = '';
+      
+      if (lowerInput.includes('пустые строки') || lowerInput.includes('удалить строки')) {
+        macro = `Sub DeleteEmptyRows()
+    Dim i As Long
+    For i = Cells(Rows.Count, 1).End(xlUp).Row To 1 Step -1
+        If WorksheetFunction.CountA(Rows(i)) = 0 Then
+            Rows(i).Delete
+        End If
+    Next i
+End Sub`;
+      } else if (lowerInput.includes('ширин') || lowerInput.includes('автоширина') || lowerInput.includes('подогнать')) {
+        macro = `Sub AutoFitColumns()
+    Cells.Select
+    Selection.Columns.AutoFit
+    Range("A1").Select
+End Sub`;
+      } else if (lowerInput.includes('раскрас') || lowerInput.includes('цвет') || lowerInput.includes('через одну')) {
+        macro = `Sub ColorAlternateRows()
+    Dim i As Long
+    For i = 2 To Cells(Rows.Count, 1).End(xlUp).Row
+        If i Mod 2 = 0 Then
+            Rows(i).Interior.Color = RGB(240, 240, 240)
+        End If
+    Next i
+End Sub`;
+      } else if (lowerInput.includes('pdf') || lowerInput.includes('пдф')) {
+        macro = `Sub ExportToPDF()
+    Dim fileName As String
+    fileName = ThisWorkbook.Path & "\\" & ActiveSheet.Name & ".pdf"
+    ActiveSheet.ExportAsFixedFormat Type:=xlTypePDF, _
+        fileName:=fileName, Quality:=xlQualityStandard
+    MsgBox "Файл сохранён: " & fileName
+End Sub`;
+      } else if (lowerInput.includes('найти') && lowerInput.includes('заменить')) {
+        macro = `Sub FindAndReplace()
+    Dim findText As String
+    Dim replaceText As String
+    findText = InputBox("Что найти?")
+    replaceText = InputBox("На что заменить?")
+    Cells.Replace What:=findText, Replacement:=replaceText, _
+        LookAt:=xlPart, MatchCase:=False
+    MsgBox "Замена выполнена!"
+End Sub`;
+      } else if (lowerInput.includes('сортир')) {
+        macro = `Sub SortByColumnA()
+    Dim lastRow As Long
+    lastRow = Cells(Rows.Count, 1).End(xlUp).Row
+    Range("A1:Z" & lastRow).Sort Key1:=Range("A1"), _
+        Order1:=xlAscending, Header:=xlYes
+End Sub`;
+      } else {
+        macro = `Sub AutoFitColumns()
+    Cells.Select
+    Selection.Columns.AutoFit
+    Range("A1").Select
+End Sub`;
+      }
+      
+      setGeneratedMacro(macro);
+      setIsGeneratingMacro(false);
+    }, 1500);
+  };
+
+  const copyMacroToClipboard = () => {
+    navigator.clipboard.writeText(generatedMacro);
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -166,10 +332,14 @@ export default function Index() {
         </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 glass-effect mb-8">
+          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 glass-effect mb-8">
             <TabsTrigger value="generator" className="gap-2">
               <Icon name="Sparkles" size={16} />
-              Генератор
+              Формулы
+            </TabsTrigger>
+            <TabsTrigger value="macros" className="gap-2">
+              <Icon name="Code2" size={16} />
+              Макросы
             </TabsTrigger>
             <TabsTrigger value="reference" className="gap-2">
               <Icon name="BookOpen" size={16} />
@@ -293,6 +463,186 @@ export default function Index() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="macros" className="animate-fade-in">
+            <div className="grid lg:grid-cols-2 gap-6 mb-8">
+              <Card className="glass-effect border-secondary/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Icon name="Terminal" size={20} />
+                    Опишите задачу для макроса
+                  </CardTitle>
+                  <CardDescription>
+                    Расскажите, что нужно автоматизировать в Excel
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Textarea
+                    placeholder="Например: удалить все пустые строки..."
+                    value={macroInput}
+                    onChange={(e) => setMacroInput(e.target.value)}
+                    className="min-h-[120px] glass-effect resize-none"
+                  />
+                  
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Популярные макросы:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {macroPrompts.map((prompt, idx) => (
+                        <Badge
+                          key={idx}
+                          variant="secondary"
+                          className="cursor-pointer hover:bg-secondary/40 transition-colors"
+                          onClick={() => setMacroInput(prompt)}
+                        >
+                          {prompt}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={generateMacro}
+                    disabled={!macroInput || isGeneratingMacro}
+                    className="w-full gradient-accent hover:opacity-90 transition-opacity"
+                    size="lg"
+                  >
+                    {isGeneratingMacro ? (
+                      <>
+                        <Icon name="Loader2" size={20} className="animate-spin mr-2" />
+                        Генерирую макрос...
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Code2" size={20} className="mr-2" />
+                        Сгенерировать макрос
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="glass-effect border-accent/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Icon name="FileCode" size={20} />
+                    Код макроса VBA
+                  </CardTitle>
+                  <CardDescription>
+                    Готовый код для встраивания в Excel
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {generatedMacro ? (
+                    <>
+                      <div className="p-4 rounded-lg bg-muted/50 border border-accent/30 animate-scale-in overflow-x-auto">
+                        <pre className="text-sm font-mono text-accent">
+                          <code>{generatedMacro}</code>
+                        </pre>
+                      </div>
+                      
+                      <Button
+                        onClick={copyMacroToClipboard}
+                        variant="outline"
+                        className="w-full"
+                        size="lg"
+                      >
+                        <Icon name="Copy" size={20} className="mr-2" />
+                        Скопировать код
+                      </Button>
+
+                      <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
+                        <div className="flex items-start gap-3">
+                          <Icon name="Info" size={20} className="text-accent mt-0.5 flex-shrink-0" />
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium">Как установить макрос:</p>
+                            <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                              <li>Откройте Excel, нажмите Alt+F11</li>
+                              <li>Вставка → Модуль</li>
+                              <li>Вставьте скопированный код</li>
+                              <li>Запустите через Alt+F8</li>
+                            </ol>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <div className="p-4 rounded-full bg-muted/50 mb-4">
+                        <Icon name="Code" size={48} className="text-muted-foreground" />
+                      </div>
+                      <p className="text-muted-foreground">
+                        Макрос появится здесь после генерации
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="glass-effect">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Icon name="Package" size={24} />
+                  Библиотека готовых макросов
+                </CardTitle>
+                <CardDescription>
+                  Выберите готовый макрос и скопируйте код
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {macroTemplates.map((category, idx) => (
+                    <div key={idx} className="space-y-2">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="h-px flex-1 bg-gradient-to-r from-secondary to-transparent" />
+                        <h3 className="text-lg font-semibold text-gradient">{category.category}</h3>
+                        <div className="h-px flex-1 bg-gradient-to-l from-secondary to-transparent" />
+                      </div>
+                      
+                      <Accordion type="single" collapsible className="space-y-2">
+                        {category.macros.map((macro, midx) => (
+                          <AccordionItem
+                            key={midx}
+                            value={`macro-${idx}-${midx}`}
+                            className="glass-effect border border-white/5 rounded-lg px-4"
+                          >
+                            <AccordionTrigger className="hover:no-underline">
+                              <div className="flex items-center gap-3">
+                                <Badge variant="outline" className="bg-secondary/20">
+                                  {macro.name}
+                                </Badge>
+                                <span className="text-sm text-muted-foreground">
+                                  {macro.description}
+                                </span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="space-y-3 pt-3">
+                              <div>
+                                <div className="flex items-center justify-between mb-2">
+                                  <p className="text-xs text-muted-foreground">Код VBA:</p>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => navigator.clipboard.writeText(macro.code)}
+                                  >
+                                    <Icon name="Copy" size={14} className="mr-1" />
+                                    Копировать
+                                  </Button>
+                                </div>
+                                <pre className="text-sm bg-muted/50 p-3 rounded overflow-x-auto">
+                                  <code className="text-accent">{macro.code}</code>
+                                </pre>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="reference" className="animate-fade-in">
